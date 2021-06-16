@@ -114,7 +114,7 @@ wget https://github.com/helviojunior/libs/blob/master/python/enumdns.py
 
 Enumeração
 ```
-python3 enumdns.py -d www.helviojunior.com.br -w ./SecLists/Discovery/DNS/subdomains-top1million-110000.txt -o dns_enum.txt
+python3 enumdns.py -d helviojunior.com.br -w ./SecLists/Discovery/DNS/subdomains-top1million-110000.txt -o dns_enum.txt
 ```
 
 #### Filtrando endereços IP
