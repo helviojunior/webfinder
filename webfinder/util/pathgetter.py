@@ -150,7 +150,7 @@ class PathGetter:
         "threads": self.current_gettter.last 
          }
 
-        with open("turbosearch.restore", "w") as text_file:
+        with open("webfinder.restore", "w") as text_file:
             text_file.write(json.dumps(dt))
 
     def status_worker(self):
