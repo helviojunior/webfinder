@@ -109,7 +109,7 @@ Ao executar o `WebFinder` temos o resultado abaixo, onde podemos observar que so
 Download da wordlist e script de recon DNS
 ```
 git clone https://github.com/danielmiessler/SecLists
-wget https://github.com/helviojunior/libs/blob/master/python/enumdns.py
+wget https://raw.githubusercontent.com/helviojunior/libs/master/python/enumdns.py
 ```
 
 Enumeração
