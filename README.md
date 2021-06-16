@@ -101,3 +101,34 @@ Ao executar o `WebFinder` temos o resultado abaixo, onde podemos observar que so
  [+] End time 2021-06-16 10:31:24
  [+] Finished tests against https://www.helviojunior.com.br, exiting
 ```
+
+### Utilização juntamente com outras ferramentas
+
+#### Enumeração DNS
+
+Download da wordlist e script de recon DNS
+```
+git clone https://github.com/danielmiessler/SecLists
+wget https://github.com/helviojunior/libs/blob/master/python/enumdns.py
+```
+
+Enumeração
+```
+python3 enumdns.py -d www.helviojunior.com.br -w ./SecLists/Discovery/DNS/subdomains-top1million-110000.txt -o dns_enum.txt
+```
+
+#### Filtrando endereços IP
+
+Agora vamos extrair somente os endereços IPs (v4) únicos da enumeração do DNS
+
+```
+cat dns_enum.txt | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | sort -u > ips.txt
+```
+
+#### Localizando servidores web
+
+Utilize o `WebFinder` nos endereços IP listados para verificar quais detém a capacidade de responder pelo site desejado
+
+```
+webfinder -t https://www.helviojunior.com.br/ -ip /tmp/ips.txt --check-both
+```
