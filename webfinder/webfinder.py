@@ -7,7 +7,7 @@ except (ValueError, ImportError) as e:
     raise Exception('You may need to run TurboSearch from the root directory (which includes README.md)', e)
 
 
-import sys, datetime, time, os, requests
+import sys, datetime, time, os, requests, socket
 from .util.color import Color
 from .util.logger import Logger
 from .util.process import Process
@@ -93,7 +93,9 @@ class WebFinder(object):
                 
                 r = requests.get(Configuration.target, verify=False, timeout=10, headers=headers, proxies=proxy)
 
-                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (CODE:%d|SIZE:%d) ' % (Configuration.target, r.status_code, len(r.text)))
+                ip = socket.gethostbyname(queue_item)
+
+                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (ip, Configuration.target, r.status_code, len(r.text)))
 
                 Configuration.main_code = r.status_code
                 Configuration.main_length = len(r.text)
