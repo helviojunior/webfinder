@@ -52,8 +52,8 @@ class PathGetter:
                 if line not in Configuration.ipaddresses:
                     Configuration.ipaddresses.append(line)
                     self.last_item = line
-                else:
-                    self.duplicated+=1
+                #else:
+                #    self.duplicated+=1
 
                 try:
                     line = f.readline()

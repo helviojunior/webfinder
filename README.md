@@ -90,7 +90,6 @@ Ao executar o `WebFinder` temos o resultado abaixo, onde podemos observar que so
      request method: GET
      ip address list: /tmp/ips.txt
      start time 2021-06-16 10:31:16
-     duplicate 5 ip addresse
 
  [+] Conectivity checker
  [+] Connection test againt https://www.helviojunior.com.br OK! (IP:54.244.151.52|CODE:200|SIZE:72826)
