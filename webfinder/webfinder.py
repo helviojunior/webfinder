@@ -100,7 +100,7 @@ class WebFinder(object):
 
                 ip = socket.gethostbyname(Configuration.host)
 
-                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (ip, Configuration.target, r.status_code, len(r.text)))
+                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (Configuration.target, ip, r.status_code, len(r.text)))
 
 
             except Exception as e:
