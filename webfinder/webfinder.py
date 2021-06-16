@@ -93,14 +93,14 @@ class WebFinder(object):
                 
                 r = requests.get(Configuration.target, verify=False, timeout=10, headers=headers, proxies=proxy)
 
-                ip = socket.gethostbyname(queue_item)
-
-                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (ip, Configuration.target, r.status_code, len(r.text)))
-
                 Configuration.main_code = r.status_code
                 Configuration.main_length = len(r.text)
                 Configuration.main_min_length = float(Configuration.main_length) * 0.90
                 Configuration.main_max_length = float(Configuration.main_length) * 1.10
+
+                ip = socket.gethostbyname(Configuration.host)
+
+                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (ip, Configuration.target, r.status_code, len(r.text)))
 
 
             except Exception as e:
