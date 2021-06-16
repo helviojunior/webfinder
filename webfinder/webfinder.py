@@ -4,7 +4,7 @@
 try:
     from .config import Configuration
 except (ValueError, ImportError) as e:
-    raise Exception('You may need to run TurboSearch from the root directory (which includes README.md)', e)
+    raise Exception('You may need to run WebFinder from the root directory (which includes README.md)', e)
 
 
 import sys, datetime, time, os, requests, socket
@@ -20,11 +20,6 @@ class WebFinder(object):
 
     def main(self):
         ''' Either performs action based on arguments, or starts attack scanning '''
-
-        #if os.getuid() != 0:
-        #    Color.pl('{!} {R}error: {O}TurboSearch{R} must be run as {O}root{W}')
-        #    Color.pl('{!} {O}re-run as: sudo ./turbosearch.py{W}')
-        #    Configuration.exit_gracefully(0)
 
         self.dependency_check()
 
@@ -55,7 +50,7 @@ class WebFinder(object):
 
         if missing_optional:
             Color.pl('{!} {O}recommended app(s) were not found')
-            Color.pl('{!} {O}TurboSearch may not work as expected{W}')
+            Color.pl('{!} {O}WebFinder may not work as expected{W}')
 
     def run(self):
         '''

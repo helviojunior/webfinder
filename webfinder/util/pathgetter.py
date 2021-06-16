@@ -172,7 +172,7 @@ class PathGetter:
                         self.running=False
                         Tools.clear_line()
                         Logger.pl('\r\n{!} {R}FATAL: Too many errors connecting to host, exiting...{W}')
-                        Logger.pl('     {O}you can use \'turbosearch -R\' to restore/continue this session{W}\r\n')
+                        Logger.pl('     {O}you can use \'webfinder -R\' to restore/continue this session{W}\r\n')
                         Configuration.kill(0)
 
                 except:

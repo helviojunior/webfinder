@@ -76,7 +76,7 @@ class Configuration(object):
             if not force_restore and os.path.exists("webfinder.restore"):
                 ignore = any(['-I' in word for word in sys.argv])
                 if not ignore:
-                    Color.pl('{!} {W}Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./turbosearch.restore')
+                    Color.pl('{!} {W}Restorefile (you have 10 seconds to abort... (use option -I to skip waiting)) from a previous session found, to prevent overwriting, ./webfinder.restore')
                     time.sleep(10)
                 os.remove("webfinder.restore")
 
