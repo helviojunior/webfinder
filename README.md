@@ -1,10 +1,6 @@
-[![ReadTheDocs](https://readthedocs.org/projects/turbosearch/badge/?version=latest)](https://turbosearch.readthedocs.io/en/latest/) [![Python 3](https://img.shields.io/badge/Python-3-green.svg)](https://github.com/helviojunior/turbosearch) [![GitHub contributors](https://img.shields.io/github/contributors/helviojunior/turbosearch)](https://github.com/helviojunior/turbosearch/graphs/contributors/)
+# Web Finder (PT-BR)
 
-# Turbo Search (PT-BR)
-
-Esta é uma ferramenta de busca (estilo brute-force) baseada em uma lista de palavras.
-
-A Ferramenta foi desenvolvida em Python, tem seu código fonte aberto e suporta multi-threading, ou seja, diversas conexões simultâneas, agilizando o processo de busca.
+Esta é uma ferramenta para busca de endereços IP que respondam por uma URL específica.
 
 ## Instalação
 
@@ -14,93 +10,95 @@ Você pode instalar (ou atualizar para) a última versão do TurboSearch diretam
 pip3 install --upgrade git+https://github.com/helviojunior/webfinder.git#egg=webfinder
 ```
 
-## Documentação
+## Conceito técnico
+Ao realizar uma requisição HTTP/S para um host a primeira fase a ser realizada pelo cliente é a resolução de nome para IP e posteriormente conexão direta para este IP. Este procedimento se refere até a camada de Transporte do modelo OSI (camada 4) onde tempos apenas IP e porta. Após a conexão TCP ocorrer com sucesso o cliente monta um cabeçalho de requisição HTTP e envia ao servidor, veja o exemplo a seguir:
 
-O TurboSearch detém uma extensiva e atualizada [documentação](https://turbosearch.readthedocs.io/en/latest/pt/). Recomendamos a leitura para entendimento das opções e variedades de utilização do TurboSearch.
-
-
-# Turbo Search (EN)
-
-An python application to look for URL based on word list.
-
-This application supports multi-threading requests.
-
-## Installation
-
-You can install the latest version of TurboSearch by using the GitHub repository:
+Supondo que em um navegador seja digitado https://www.helviojunior.com.br (conforme o comando curl abaixo), primeiramente o cliente resolverá o nome DNS para o IP (cujo resultado será 54.244.151.52) e posteriormente enviará o cabeçalho conforme abaixo:
 
 ```
-pip3 install git+https://github.com/helviojunior/turbosearch.git#egg=turbosearch
+curl -k https://www.helviojunior.com.br
 ```
 
-## Documentation
-
-
-O TurboSearch  has an extensive and up-to-date [documentation](https://turbosearch.readthedocs.io/en/latest/en/). Users are recommended to refer to it as it may help them in their attempts to use TurboSearch. In particular, new users should navigate through it (see the FAQ for common installation problems).
-
-
-# Utilization samples/exemplos de utilização
+Cabeçalho:
 ```
-./turbosearch.py -t http://10.10.10.10/ -w /usr/share/dirb/wordlists/big.txt
-./turbosearch.py -t http://10.10.10.10/ -w /usr/share/dirb/wordlists/big.txt -x .html,.xml,.php,.txt
-./turbosearch.py -t http://10.10.10.10/ -w /usr/share/dirb/wordlists/big.txt -x .html,.xml,.php,.txt -o /path/to/output/file.txt
-
-```
-
-
+GET / HTTP/1.1
+Host: www.helviojunior.com.br
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Upgrade-Insecure-Requests: 1
+Te: trailers
+Connection: close
 ```
 
-HHHHHH           →→HHH
-HHHHHH           →→→→HH
-HHHHHH           →→→→→→
-→→-→→→→→→→→→→→→→→→→→→→→→→          Turbo Search v0.1.15 by Helvio Junior
-→→|→→→→→→→→→→→→→→→→→→→→→→→→        automated url finder
-→→-→→→→→→→→→→→→→→→→→→→→→→          https://github.com/helviojunior/turbosearch
-HHHHHH           →→→→→→
-HHHHHH           →→→→HH
-HHHHHH           →→HHH
+Como podemos observar no cabeçalho ‘Host’ temos o nome completo do servidor. Com o advento do HTTP 1.1 em diante o servidor leva em consideração este campo para rotear internamente em qual site deve responder, sendo que se o servidor estiver preparado para responder por este host (www.helviojunior.com.br) o mesmo o fará.
 
-
-optional arguments:
-  -h, --help                  show this help message and exit
-
-General Setting:
-  -t [target url]             target url (ex: http://10.10.10.10/path)
-  -w [word list]              word list to be tested
-  -T [tasks]                  number of connects in parallel (per host, default: 16)
-  -o [output file]            save output to disk (default: none)
-  -x [extensions]             Append each request with this extensions (comma-separated values)
-
-Custom Settings:
-  -R, --restore               restore a previous aborted/crashed session
-  -I, --ignore                ignore an existing restore file (don't wait 10 seconds)
-  --proxy [target proxy]      target proxy URL (ex: http://127.0.0.1:8080)
-  --report-to [target proxy]  target proxy URL to report only successful requests (ex: http://127.0.0.1:8080)
-  --deep                      Deep Search: Look for URLs inside of HTML results
-  -v, --verbose               Shows more options (-h -v). Prints commands and outputs. (default: quiet)
-  --full-log                  Print full requested URLs (default: no)
-  --no-forward-location       Disable forward to Location response address (default: no)
-  --ignore-result [filter]    ignore resuts by result code or/and size (ex1: 302 or ex2: 302:172 or ex3: 405,302:172 )
-  --find [text to find]       Text to find in content or header (comma-separated values)
-  --method [http method]      Specify request method (default: GET). Available methods: GET, POST,
-                              PUT, OPTIONS
-  --random-agent              Use randomly selected HTTP User-Agent header value (default: no)
-  --header [text to find]     JSON-formatted header key/value
-  --ci, --case-insensitive    Case Insensitive search: put all wordlist in lower case
-  --stats-db                  Save reported URI at SQLite local database called stats.db (default: no)
-  --no-robots                 Not look for robots.txt (default: no)
-
-Word List Options:
-  --md5-search                Search for a MD5 Hash version of each word (default: no)
-  --sha1-search               Search for a SHA1 Hash version of each word (default: no)
-  --sha256-search             Search for a SHA256 Hash version of each word (default: no)
-  --hash-upper                In case of Hash Search be enabled, also search by Uppercase of Hash Hex Text (default: no)
-
+Porém nós podemos realizar o mesmo processo de forma diferente, onde direcionamos o cliente em qual endereço IP o mesmo deve conectar e forçamos o host no cabeçalho do HTTP conforme o comando abaixo:
 
 ```
+curl -k -H 'Host: www.helviojunior.com.br' https://54.244.151.52
+```
 
-# Ferramentas relacionadas
+Deste modo obrigatoriamente a conexão TCP ocorrerá para o IP 54.244.151.52 independente da resolução DNS, porém no cabeçalho http será enviado o host www.helviojunior.com.br. Desta forma iremos obter o mesmo resultado como resposta.
 
-O Luiz Carmo criou uma ferramenta (Web Hunter Screen) que realiza o acesso automatizado as URLs e cria um ScreenShoot de cada página. A ferramenta está preparada para ler o arquivo de dados gerado pelo ```TurboSearch``` com a opção **--stats-db** e realizar os ScreenShoots de todas as URLs apontadas pelo TurboSearch.
+Porém deste modo podemos alterar o endereço IP para qualquer outro, como por exemplo 10.10.10.10 que de o servidor deste IP existir e tiver preparado para responder ao site www.helviojunior.com.br a resposta (HTTP Status code e tamanho) será a mesma.
 
-URL: https://github.com/lgcarmo/WebHunterScreen
+```
+curl -k -H 'Host: www.helviojunior.com.br' https://10.10.10.10
+```
+
+Sendo assim podemos utilizar essa técnica para passar uma lista de IPs e verificar se eles estão configurados para responder por um determinado site.
+
+
+## Utilização
+
+Recomendamos a utilização dessa ferramenta seguindo os seguintes passos:
+- Busca de todos os endereços IP atrelados ao cliente
+- Criação de um arquivo TXT com todos os IPs
+- Utilização do `WebFinder` para identificar em quais endereços IP o site é acessível
+
+### Endereços IP
+
+Supondo que em processo de enumeração encontrei para o cliente (dono do site helviojunior.com.br) os seguintes endereços IP:
+
+```
+13.77.161.179
+104.215.148.63
+40.76.4.15
+54.244.151.52
+172.217.1.99
+```
+
+### Executando o WebFinder
+
+Ao executar o `WebFinder` temos o resultado abaixo, onde podemos observar que somente o servidor no IP 54.244.151.52 é capaz de responder pela URL www.helviojunior.com.br
+
+```
+#webfinder -t https://www.helviojunior.com.br/ -ip /tmp/ips.txt --check-both
+
+       Web Finder v0.1.2 by Helvio Junior
+       automated web server finder
+       https://github.com/helviojunior/webfinder
+
+
+ [+] Startup parameters
+     command line: /usr/local/bin/webfinder -t https://www.helviojunior.com.br/ -ip /tmp/ips.txt --check-both
+     target: https://www.helviojunior.com.br
+     host: www.helviojunior.com.br
+     tasks: 16
+     request method: GET
+     ip address list: /tmp/ips.txt
+     start time 2021-06-16 10:31:16
+     duplicate 5 ip addresse
+
+ [+] Conectivity checker
+ [+] Connection test againt https://www.helviojunior.com.br OK! (IP:54.244.151.52|CODE:200|SIZE:72826)
+
+ [+] Scanning IP address for https://www.helviojunior.com.br
++ https://54.244.151.52 (CODE:200|SIZE:72826)
++ http://54.244.151.52 (CODE:200|SIZE:72826)
+
+ [+] End time 2021-06-16 10:31:24
+ [+] Finished tests against https://www.helviojunior.com.br, exiting
+```
