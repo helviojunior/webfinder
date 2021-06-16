@@ -4,14 +4,14 @@ Esta é uma ferramenta para busca de endereços IP que respondam por uma URL esp
 
 ## Instalação
 
-Você pode instalar (ou atualizar para) a última versão do TurboSearch diretamente do repositório do GitHub
+Você pode instalar (ou atualizar para) a última versão do `WebFinder` diretamente do repositório do GitHub
 
 ```
 pip3 install --upgrade git+https://github.com/helviojunior/webfinder.git#egg=webfinder
 ```
 
 ## Conceito técnico
-Ao realizar uma requisição HTTP/S para um host a primeira fase a ser realizada pelo cliente é a resolução de nome para IP e posteriormente conexão direta para este IP. Este procedimento se refere até a camada de Transporte do modelo OSI (camada 4) onde tempos apenas IP e porta. Após a conexão TCP ocorrer com sucesso o cliente monta um cabeçalho de requisição HTTP e envia ao servidor, veja o exemplo a seguir:
+Ao realizar uma requisição HTTP/S para um host a primeira fase a ser realizada pelo cliente é a resolução de nome para IP e posteriormente conexão direta para este IP. Este procedimento se refere até a camada de Transporte do modelo OSI (camada 4) onde temos apenas IP e porta. Após a conexão TCP ocorrer com sucesso o cliente monta um cabeçalho de requisição HTTP e envia ao servidor, veja o exemplo a seguir:
 
 Supondo que em um navegador seja digitado https://www.helviojunior.com.br (conforme o comando curl abaixo), primeiramente o cliente resolverá o nome DNS para o IP (cujo resultado será 54.244.151.52) e posteriormente enviará o cabeçalho conforme abaixo:
 
