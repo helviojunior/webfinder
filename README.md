@@ -130,5 +130,5 @@ cat dns_enum.txt | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | s
 Utilize o `WebFinder` nos endereços IP listados para verificar quais detém a capacidade de responder pelo site desejado
 
 ```
-webfinder -t https://www.helviojunior.com.br/ -ip /tmp/ips.txt --check-both
+webfinder -t https://www.helviojunior.com.br/ -ip ips.txt --check-both
 ```
