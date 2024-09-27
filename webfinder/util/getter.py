@@ -43,6 +43,7 @@ class Getter:
         Getter.running=True
 
         requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
 
         Getter.proxy={}
         if Configuration.proxy != '':
