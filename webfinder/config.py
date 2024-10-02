@@ -72,6 +72,8 @@ class Configuration(object):
 
         config_check = 0
 
+        sys.argv[0] = 'webfinder'
+
         force_restore = any(['-R' in word for word in sys.argv])
         help = any(['-h' in word for word in sys.argv])
 
