@@ -36,3 +36,15 @@ class Tools:
         if ':' in host:
             host = host.split(':')[0]
         return host
+
+    @staticmethod
+    def get_port(url):
+        rUri = urlparse(url)
+        port = ''
+        if rUri.scheme.lower() == 'https':
+            port = 443
+        else:
+            port = 80
+        if ':' in rUri.netloc:
+            port = rUri.netloc.split(':')[1]
+        return port

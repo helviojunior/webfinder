@@ -15,7 +15,7 @@ setup(name='webfinder',
       url='https://github.com/helviojunior/webfinder',
       packages=find_packages(),
       package_data={'webfinder': ['resources/*']},
-      install_requires=['bs4>=0.0.1', 'requests>=2.23.0', 'colorama'],
+      install_requires=['bs4>=0.0.1', 'requests>=2.23.0', 'colorama', 'pyopenssl'],
       entry_points= { 'console_scripts': [
         'webfinder=webfinder.webfinder:run',
         ]}

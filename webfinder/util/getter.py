@@ -9,6 +9,16 @@ from ..util.tools import Tools
 
 import os, subprocess, socket, re, requests, queue, threading, sys, operator, time, json
 
+import os, re, sys, getopt, random
+import sys, struct
+import base64, string
+import socket
+import hashlib
+from collections import defaultdict
+from OpenSSL import SSL
+from OpenSSL.crypto import dump_certificate, dump_publickey, FILETYPE_ASN1, FILETYPE_PEM
+from urllib.parse import urlparse
+
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
@@ -257,7 +267,7 @@ class Getter:
             server = Tools.get_host(url)
             pad = " " * (15 - len(server))
 
-            waf = self.get_waf(response)
+            waf = self.get_waf(url, response)
             if waf is not None:
                 waf = '{R}* %s{W}' % waf
             else:
@@ -287,7 +297,8 @@ class Getter:
             url, status, size))
 
     @classmethod
-    def get_waf(cls, response) -> Optional[str]:
+    def get_waf(cls, url, response) -> Optional[str]:
+        ht = ''
         try:
             if isinstance(response, Response):
                 ht = '    \r\n'.join([
@@ -295,15 +306,82 @@ class Getter:
                     for k, v in response.headers.items()
                     if k is not None and k.strip != ''
                 ])
+        except:
+            return None
+
+        try:
+            for ws in Configuration.waf_list_short:
+                if ws in ht:
+                    waf = next(iter([
+                        k
+                        for k, v in Configuration.waf_list.items()
+                        for n in v
+                        if ws in n
+                    ]), None)
+                    if waf is not None:
+                        return waf
+        except:
+            pass
+
+        try:
+            cert_data = ''
+            host = Tools.get_host(url)
+            uri = urlparse(url)
+            port = 443
+            if uri.scheme.lower() == 'https':
+
+                try:
+                    if ':' in uri.netloc:
+                        port = int(uri.netloc.split(':')[1])
+                except:
+                    pass
+
+                context = SSL.Context(method=SSL.TLS_CLIENT_METHOD)
+                context.check_hostname = False
+
+                conn = SSL.Connection(context, socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+                conn.settimeout(5)
+                conn.connect((host, port))
+                conn.setblocking(1)
+                conn.do_handshake()
+                conn.set_tlsext_host_name(host.encode())
+                for (idx, cert) in enumerate(conn.get_peer_cert_chain()):
+                    cert_data += f'{cls.get_509_name_str(cert.get_issuer())}\n'
+                    cert_data += f'{cls.get_509_name_str(cert.get_subject())}\n'
+
+                    san = cls.get_certificate_san(cert)
+                    cert_data += f'{san}\n'
+
+                conn.close()
+
                 for ws in Configuration.waf_list_short:
-                    if ws in ht:
-                        return next(iter([
+                    if ws in cert_data:
+                        waf = next(iter([
                             k
                             for k, v in Configuration.waf_list.items()
                             for n in v
                             if ws in n
                         ]), None)
+                        if waf is not None:
+                            return waf
         except:
             pass
 
         return None
+
+    @classmethod
+    def get_certificate_san(cls, x509cert):
+        san = ''
+        ext_count = x509cert.get_extension_count()
+        for i in range(0, ext_count):
+            ext = x509cert.get_extension(i)
+            if 'subjectAltName' in str(ext.get_short_name()):
+                san = ext.__str__()
+        return san.lower()
+
+    @classmethod
+    def get_509_name_str(cls, name):
+        try:
+            return "".join("/{:s}={:s}".format(name.decode(), value.decode()) for name, value in name.get_components())
+        except:
+            return str(name)
