@@ -89,11 +89,11 @@ class WebFinder(object):
 
                 Configuration.main_code = r.status_code
                 Configuration.main_length = len(r.text)
-                Configuration.main_min_length = float(Configuration.main_length) * 0.90
-                Configuration.main_max_length = float(Configuration.main_length) * 1.10
+                Configuration.main_min_length = float(Configuration.main_length) * 0.93
+                Configuration.main_max_length = float(Configuration.main_length) * 1.07
 
                 Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
-                          (Configuration.target, ip, r.status_code, len(r.text)))
+                          (Configuration.target, ip, r.status_code, Configuration.main_length))
 
             except Exception as e:
                 if Configuration.proxy != '':
