@@ -10,6 +10,9 @@
   ],
   "BigIP" : [
     "BigIP"
+  ],
+  "AWS Global Accelerator" : [
+    "awsglobalaccelerator.com"
   ]
 }
 
