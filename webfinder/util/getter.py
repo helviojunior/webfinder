@@ -323,6 +323,24 @@ class Getter:
         except:
             pass
 
+        # Get by DNS
+        try:
+            host = Tools.get_host(url)
+            ht = '\n'.join(socket.getnameinfo((host, 0), 0))
+            for ws in Configuration.waf_list_short:
+                if ws in ht:
+                    waf = next(iter([
+                        k
+                        for k, v in Configuration.waf_list.items()
+                        for n in v
+                        if ws in n
+                    ]), None)
+                    if waf is not None:
+                        return waf
+        except:
+            pass
+
+        # Get by Standard Cert
         try:
             cert_data = ''
             host = Tools.get_host(url)

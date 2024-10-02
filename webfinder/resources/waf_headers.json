@@ -1,10 +1,12 @@
 {
   "CloudFront" : [
     "X-Amz-Cf",
-    "cloudfront"
+    "cloudfront",
+    "cloudfront.net"
   ],
   "Akamai" : [
-    "X-Akamai"
+    "X-Akamai",
+    "akamaitechnologies.com"
   ],
   "BigIP" : [
     "BigIP"
