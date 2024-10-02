@@ -75,6 +75,7 @@ class WebFinder(object):
 
             Logger.pl('{+} {W}Conectivity checker{W}')
             try:
+
                 proxy={}
                 if Configuration.proxy != '':
                     proxy = {
@@ -82,11 +83,7 @@ class WebFinder(object):
                       'https': Configuration.proxy,
                     }
 
-                headers = Configuration.user_headers
-                if Configuration.user_agent:
-                    headers['User-Agent'] = Configuration.user_agent
-                
-                r = requests.get(Configuration.target, verify=False, timeout=10, headers=headers, proxies=proxy)
+                r = Getter.general_request(Configuration.target, proxy=proxy)
 
                 Configuration.main_code = r.status_code
                 Configuration.main_length = len(r.text)
@@ -104,8 +101,7 @@ class WebFinder(object):
                 else:
                     Logger.pl('{!} {R}Error connecting to url {O}%s{R} without proxy{W}' % (Configuration.target))
                 
-                Logger.pl('{!} {O}Error: {R}%s{W}' % e)
-                Configuration.exit_gracefully(1)
+                raise e
 
             if Configuration.proxy_report_to != '':
                 try:
@@ -119,24 +115,18 @@ class WebFinder(object):
                     headers = Configuration.user_headers
                     if Configuration.user_agent:
                         headers['User-Agent'] = Configuration.user_agent
-                        
 
-                    requests.packages.urllib3.disable_warnings()
-                    r = requests.get(Configuration.target, verify=False, timeout=10, headers=headers, proxies=proxy)
+                    r = Getter.general_request(Configuration.target, proxy=proxy)
 
                     Logger.pl('{+} {W}Connection test againt using report to proxy {C}%s{W} OK! (CODE:%d|SIZE:%d) ' % (Configuration.target, r.status_code, len(r.text)))
 
                 except Exception as e:
                     Logger.pl('{!} {R}Error connecting to url {O}%s{R} using {G}report to{R} proxy {O}%s{W}' % (Configuration.target, Configuration.proxy_report_to))
-                    Logger.pl('{!} {O}Error: {R}%s{W}' % e)
-                    Configuration.exit_gracefully(1)
-
+                    raise e
 
             Logger.pl('     ')
 
             Logger.pl('{+} {W}Scanning IP address for {C}%s{W} ' % Configuration.target)
-
-
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
@@ -149,6 +139,7 @@ class WebFinder(object):
                 err = err.replace('  File', '{W}{D}File')
                 err = err.replace('  Exception: ', '{R}Exception: {O}')
                 Color.pl(err)
+            Configuration.exit_gracefully(1)
 
         testing = True
         while(testing):

@@ -5,11 +5,12 @@ from ..util.tools import Tools
 
 import os, subprocess, socket, re, requests, queue, threading, sys, operator, time, json
 
-from ..config import Configuration
-from ..util.logger import Logger
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+from ..config import Configuration
+from ..util.logger import Logger
+from ..util.ssl import HostSSLContext, HostHeaderSSLAdapter
 
 class Getter:
 
@@ -130,14 +131,21 @@ class Getter:
         if force_method is not None:
             method = force_method.upper()
 
+        url_p = urlparse(url)
+
+        s = requests.Session()
+
+        if url_p.scheme.lower() == "https":
+            s.mount('https://', HostHeaderSSLAdapter())
+
         if method == "POST":
-            return requests.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
         elif method == "PUT":
-            return requests.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
         elif method == "OPTIONS":
-            return requests.options(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.options(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
         else:
-            return requests.get(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.get(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
 
 
     def worker(self, index):

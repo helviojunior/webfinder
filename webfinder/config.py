@@ -321,7 +321,7 @@ class Configuration(object):
 
     @staticmethod
     def mandatory():
-        Color.pl('{!} {R}error: missing a mandatory option ({O}-t and -w{R}){G}, use -h help{W}\r\n')
+        Color.pl('{!} {R}error: missing a mandatory option ({O}-t and -ip{R}){G}, use -h help{W}\r\n')
         Configuration.exit_gracefully(0)
 
     @staticmethod

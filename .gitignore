@@ -43,3 +43,4 @@ tmtagsHistory
 *.sublime-project
 *.sublime-workspace
 .bundle
+*.egg-info
