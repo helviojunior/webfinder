@@ -10,7 +10,8 @@ from urllib.parse import urlparse
 
 from ..config import Configuration
 from ..util.logger import Logger
-from ..util.ssl import HostSSLContext, HostHeaderSSLAdapter
+from ..util.ssl import HostHeaderSSLAdapter
+
 
 class Getter:
 
@@ -101,7 +102,7 @@ class Getter:
 
         self.q.join()  # block until all tasks are done
 
-        while(Getter.running):
+        while Getter.running:
             if len(self.q.queue) > 0:
 
                 if Configuration.verbose > 5:
@@ -118,8 +119,6 @@ class Getter:
     @staticmethod
     def general_request(url, proxy=None, force_method=None):
 
-        headers = {}
-
         headers = Configuration.user_headers
         if Configuration.user_agent:
             headers['User-Agent'] = Configuration.user_agent
@@ -127,7 +126,7 @@ class Getter:
         # Always define host header
         headers['Host'] = Configuration.host
         
-        method=Configuration.request_method.upper()
+        method = Configuration.request_method.upper()
         if force_method is not None:
             method = force_method.upper()
 
@@ -139,14 +138,17 @@ class Getter:
             s.mount('https://', HostHeaderSSLAdapter())
 
         if method == "POST":
-            return s.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False,
+                          proxies=(proxy if proxy is not None else Getter.proxy))
         elif method == "PUT":
-            return s.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False,
+                         proxies=(proxy if proxy is not None else Getter.proxy))
         elif method == "OPTIONS":
-            return s.options(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
+            return s.options(url, verify=False, timeout=30, headers=headers, allow_redirects=False,
+                             proxies=(proxy if proxy is not None else Getter.proxy))
         else:
-            return s.get(url, verify=False, timeout=30, headers=headers, allow_redirects=False, proxies=(proxy if proxy!=None else Getter.proxy))
-
+            return s.get(url, verify=False, timeout=30, headers=headers, allow_redirects=False,
+                         proxies=(proxy if proxy is not None else Getter.proxy))
 
     def worker(self, index):
         try:
@@ -180,8 +182,7 @@ class Getter:
         if Configuration.verbose > 4:
             Logger.pl('{?} {G}Starting worker to: {O}%s{W}' % ip)
 
-        ret_ok = False
-        uri = Configuration.base_target.replace('{ip}',ip)
+        uri = Configuration.base_target.replace('{ip}', ip)
         ret_ok = self.get_uri(uri)
         if Configuration.check_both:
             if 'https://' in uri.lower():
@@ -189,6 +190,7 @@ class Getter:
             else:
                 self.get_uri(uri.replace('http://', 'https://'))
 
+        return ret_ok
 
     def get_uri(self, url):
 
@@ -198,11 +200,11 @@ class Getter:
         ret_ok = False
         if Configuration.verbose > 4:
             Tools.clear_line()
-            Logger.pl('{?} {G}Testing [%d/%d]: {O}%s{W}' % (Getter.checked,Getter.total,url))
+            Logger.pl('{?} {G}Testing [%d/%d]: {O}%s{W}' % (Getter.checked, Getter.total, url))
 
         if not Configuration.full_log:
             Tools.clear_line()
-            print(("Testing [%d/%d]: %s" % (Getter.checked,Getter.total,url)), end='\r', flush=True)
+            print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, url)), end='\r', flush=True)
             pass
         
         try_cnt = 0
@@ -214,9 +216,9 @@ class Getter:
                     ret_ok = True
 
                 if Configuration.full_log or Configuration.verbose > 4:
-                    self.raise_url(url, r.status_code, len(r.text))
+                    self.log_url(url, r.status_code, len(r.text))
                 else:
-                    self.chech_if_rise(url, r.status_code, len(r.text))
+                    self.check_if_rise(url, r.status_code, len(r.text))
 
                 try_cnt = 4
             except Exception as e:
@@ -230,32 +232,38 @@ class Getter:
                 pass
 
             if try_cnt >= 3:
-                time.sleep( 0.2 * (try_cnt+1))
+                time.sleep(0.2 * (try_cnt+1))
             try_cnt = try_cnt+1
 
             return ret_ok
 
-    def chech_if_rise(self, url, status_code, size):
+    def check_if_rise(self, url, status_code, size):
 
         if status_code == Configuration.main_code \
                 and Configuration.main_min_length <= size <= Configuration.main_max_length:
-            self.raise_url(url, status_code, size)
 
-    def raise_url(self, url, status, len):
+            server = Tools.get_host(url)
+            pad = " " * (15 - len(server))
+
+            Tools.clear_line()
+            Logger.pl('{W}Found: {O}%s{W} %s (CODE:%d|SIZE:%d) ' % (
+                server, pad, status_code, size))
+
+            if Configuration.proxy_report_to != '':
+                try:
+
+                    proxy = {
+                        'http': Configuration.proxy_report_to,
+                        'https': Configuration.proxy_report_to,
+                    }
+
+                    Getter.general_request(url, proxy)
+
+                except Exception as e:
+                    pass
+
+    @classmethod
+    def log_url(cls, url, status, size):
 
         Logger.pl('+ %s (CODE:%d|SIZE:%d) ' % (
-            url, status, len))
-
-        if Configuration.proxy_report_to != '':
-            try:
-                proxy={}
-
-                proxy = {
-                  'http': Configuration.proxy_report_to,
-                  'https': Configuration.proxy_report_to,
-                }
-                
-                Getter.general_request(url, proxy)
-
-            except Exception as e:
-                pass
+            url, status, size))

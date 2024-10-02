@@ -40,6 +40,9 @@ class Configuration(object):
     main_code=0
     main_length=0
     check_both=False
+    base_target = False
+    main_min_length = 0
+    main_max_length = 0
 
     @staticmethod
     def initialize():
@@ -100,20 +103,23 @@ class Configuration(object):
                     if a != "-I":
                         Configuration.cmd_line += "%s " % a
 
-
-
         Color.pl('{+} {W}Startup parameters')
 
         Logger.pl('     {C}command line:{O} %s{W}' % Configuration.cmd_line)
 
         if args.target:
+            from .util.tools import Tools
+
             Configuration.target = args.target
             if Configuration.target.endswith('/'):
                 Configuration.target = Configuration.target[:-1]
 
-            rUri = urlparse(Configuration.target)
-            Configuration.host = rUri.netloc
-            Configuration.base_target = Configuration.target.replace(rUri.netloc, '{ip}')
+            #rUri = urlparse(Configuration.target)
+            #Configuration.host = rUri.netloc
+            #if ':' in Configuration.host:
+            #    Configuration.host = Configuration.host.split(':')[0]
+            Configuration.host = Tools.get_host(Configuration.target)
+            Configuration.base_target = Configuration.target.replace(Configuration.host, '{ip}')
 
         if args.tasks:
             Configuration.tasks = args.tasks
@@ -266,7 +272,6 @@ class Configuration(object):
                     Color.pl('{!} {R}error: could not open output file to write{W}\r\n')
                     Configuration.exit_gracefully(0)
 
-
         try:
             with open(Configuration.ip_list, 'r') as f:
                 # file opened for writing. write to it here
@@ -281,7 +286,6 @@ class Configuration(object):
             else:
                 Logger.pl('{!} {R}error: could not open word list file {W}\r\n')
                 Configuration.exit_gracefully(0)
-
 
         Logger.pl('     {C}target:{O} %s{W}' % Configuration.target)
         Logger.pl('     {C}host:{O} %s{W}' % Configuration.host)

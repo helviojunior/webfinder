@@ -14,7 +14,7 @@ from .util.process import Process
 from .util.pathgetter import PathGetter
 from .util.tools import Tools
 from .util.getter import Getter
-from .util.robots import Robots
+
 
 class WebFinder(object):
 
@@ -73,27 +73,27 @@ class WebFinder(object):
                 Logger.pl('     {C}duplicate {O}%d{C} ip addresse{W}' % get.len())
             Logger.pl(' ')
 
-            Logger.pl('{+} {W}Conectivity checker{W}')
+            Logger.pl('{+} {W}Connectivity checker{W}')
+            ip = None
             try:
 
-                proxy={}
+                proxy = {}
                 if Configuration.proxy != '':
                     proxy = {
                       'http': Configuration.proxy,
                       'https': Configuration.proxy,
                     }
 
-                r = Getter.general_request(Configuration.target, proxy=proxy)
+                ip = socket.gethostbyname(Configuration.host)
+                r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
 
                 Configuration.main_code = r.status_code
                 Configuration.main_length = len(r.text)
                 Configuration.main_min_length = float(Configuration.main_length) * 0.90
                 Configuration.main_max_length = float(Configuration.main_length) * 1.10
 
-                ip = socket.gethostbyname(Configuration.host)
-
-                Logger.pl('{+} {W}Connection test againt {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' % (Configuration.target, ip, r.status_code, len(r.text)))
-
+                Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
+                          (Configuration.target, ip, r.status_code, len(r.text)))
 
             except Exception as e:
                 if Configuration.proxy != '':
@@ -105,8 +105,6 @@ class WebFinder(object):
 
             if Configuration.proxy_report_to != '':
                 try:
-                    proxy={}
-
                     proxy = {
                       'http': Configuration.proxy_report_to,
                       'https': Configuration.proxy_report_to,
@@ -116,17 +114,19 @@ class WebFinder(object):
                     if Configuration.user_agent:
                         headers['User-Agent'] = Configuration.user_agent
 
-                    r = Getter.general_request(Configuration.target, proxy=proxy)
+                    r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
 
-                    Logger.pl('{+} {W}Connection test againt using report to proxy {C}%s{W} OK! (CODE:%d|SIZE:%d) ' % (Configuration.target, r.status_code, len(r.text)))
+                    Logger.pl('{+} {W}Connection test against using report to proxy {C}%s{W} OK! (CODE:%d|SIZE:%d) ' %
+                              (Configuration.target, r.status_code, len(r.text)))
 
                 except Exception as e:
-                    Logger.pl('{!} {R}Error connecting to url {O}%s{R} using {G}report to{R} proxy {O}%s{W}' % (Configuration.target, Configuration.proxy_report_to))
+                    Logger.pl('{!} {R}Error connecting to url {O}%s{R} using {G}report to{R} proxy {O}%s{W}' %
+                              (Configuration.target, Configuration.proxy_report_to))
                     raise e
 
-            Logger.pl('     ')
+            Logger.pl('{*} {W}Scanning IP address for {C}%s{W} ' % Configuration.target)
 
-            Logger.pl('{+} {W}Scanning IP address for {C}%s{W} ' % Configuration.target)
+            Logger.pl('     ')
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
@@ -142,7 +142,7 @@ class WebFinder(object):
             Configuration.exit_gracefully(1)
 
         testing = True
-        while(testing):
+        while testing:
             try:
                 get.run()
                 Logger.pl('     ')
@@ -178,9 +178,7 @@ class WebFinder(object):
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
         Logger.pl('{+} {C}End time {O}%s{W}' % timestamp)
 
-
         Logger.pl("{+} Finished tests against {C}%s{W}, exiting" % Configuration.target)
-
 
         #Configuration.delete_temp()
 
@@ -216,6 +214,7 @@ def run():
         Color.pl('\n{!} {O}interrupted, shutting down...{W}')
 
     Configuration.exit_gracefully(0)
+
 
 if __name__ == '__main__':
     run()

@@ -62,7 +62,8 @@ class HostHeaderSSLAdapter(HTTPAdapter):
         if hostname and self._hostname != hostname:
             self._hostname = hostname
             context = HostSSLContext(hostname)
-            self.init_poolmanager(self._pool_connections, self._pool_maxsize, block=self._pool_block, ssl_context=context)
+            self.init_poolmanager(self._pool_connections, self._pool_maxsize, block=self._pool_block,
+                                  ssl_context=context)
 
         connection_pool_kwargs = self.poolmanager.connection_pool_kw
 

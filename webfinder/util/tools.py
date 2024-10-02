@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import string, random, sys, re
+from urllib.parse import urlparse
 
 class Tools:
 
@@ -27,3 +28,11 @@ class Tools:
             return True
         else:
             return False
+
+    @staticmethod
+    def get_host(url):
+        rUri = urlparse(url)
+        host = rUri.netloc.strip(': ')
+        if ':' in host:
+            host = host.split(':')[0]
+        return host
