@@ -50,7 +50,7 @@ class PathGetter:
                     self.ingore_until = line     
 
                 if line not in Configuration.ipaddresses:
-                    Configuration.ipaddresses.append(line)
+                    Configuration.ipaddresses.append(line.strip('\r\n\t').strip())
                     self.last_item = line
                 #else:
                 #    self.duplicated+=1

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+import datetime
 from typing import Optional
 
 from requests import Response
@@ -128,7 +129,9 @@ class Getter:
 
         # Always define host header
         headers['Host'] = Configuration.host
-        
+        headers['If-Modified-Since'] = (
+                datetime.datetime.utcnow() - datetime.timedelta(hours=43800, minutes=50)).strftime("%c")
+
         method = Configuration.request_method.upper()
         if force_method is not None:
             method = force_method.upper()
@@ -222,13 +225,20 @@ class Getter:
 
                 self.check_if_rise(url, r.status_code, len(r.text), r)
 
+                if Configuration.verbose > 5:
+                    ht = '\r\n'.join([
+                        f"  {k}: {v}"
+                        for k, v in r.headers.items()
+                        if k is not None and k.strip != ''
+                    ])
+                    Logger.pl('{*} Response header: \r\n{W}%s{W}\r\n\r\n' % ht)
+
                 try_cnt = 4
             except Exception as e:
 
                 Tools.clear_line()
                 if Configuration.verbose > 1:
                     Logger.pl('{*} {O}Error loading %s: %s{W}' % (url, e))
-                    sys.exit(0)
                 elif Configuration.verbose > 0:
                     Logger.pl('{*} {O}Error loading %s{W}' % url)
                 pass
@@ -280,14 +290,18 @@ class Getter:
     def get_waf(cls, response) -> Optional[str]:
         try:
             if isinstance(response, Response):
-                ht = '\n'.join([str(f"{k}: {v}").lower() for k, v in response.headers.items()])
+                ht = '    \r\n'.join([
+                    str(f"{k}: {v}").lower()
+                    for k, v in response.headers.items()
+                    if k is not None and k.strip != ''
+                ])
                 for ws in Configuration.waf_list_short:
                     if ws in ht:
                         return next(iter([
                             k
                             for k, v in Configuration.waf_list.items()
                             for n in v
-                            if ws in ht
+                            if ws in n
                         ]), None)
         except:
             pass
