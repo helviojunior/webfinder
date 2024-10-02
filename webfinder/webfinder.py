@@ -130,7 +130,7 @@ class WebFinder(object):
 
         except Exception as e:
             Color.pl("\n{!} {R}Error: {O}%s" % str(e))
-            if Configuration.verbose > 1 or True:
+            if Configuration.verbose > 1:
                 Color.pl('\n{!} {O}Full stack trace below')
                 from traceback import format_exc
                 Color.p('\n{!}    ')
