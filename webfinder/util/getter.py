@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+from typing import Optional
+
+from requests import Response
 
 from ..util.tools import Tools
 
@@ -138,16 +141,16 @@ class Getter:
             s.mount('https://', HostHeaderSSLAdapter())
 
         if method == "POST":
-            return s.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False,
+            return s.post(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=True,
                           proxies=(proxy if proxy is not None else Getter.proxy))
         elif method == "PUT":
-            return s.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=False,
+            return s.put(url, verify=False, timeout=30, data={}, headers=headers, allow_redirects=True,
                          proxies=(proxy if proxy is not None else Getter.proxy))
         elif method == "OPTIONS":
-            return s.options(url, verify=False, timeout=30, headers=headers, allow_redirects=False,
+            return s.options(url, verify=False, timeout=30, headers=headers, allow_redirects=True,
                              proxies=(proxy if proxy is not None else Getter.proxy))
         else:
-            return s.get(url, verify=False, timeout=30, headers=headers, allow_redirects=False,
+            return s.get(url, verify=False, timeout=30, headers=headers, allow_redirects=True,
                          proxies=(proxy if proxy is not None else Getter.proxy))
 
     def worker(self, index):
@@ -205,7 +208,6 @@ class Getter:
         if not Configuration.full_log:
             Tools.clear_line()
             print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, url)), end='\r', flush=True)
-            pass
         
         try_cnt = 0
         while try_cnt < 5:
@@ -217,8 +219,8 @@ class Getter:
 
                 if Configuration.full_log or Configuration.verbose > 4:
                     self.log_url(url, r.status_code, len(r.text))
-                else:
-                    self.check_if_rise(url, r.status_code, len(r.text))
+
+                self.check_if_rise(url, r.status_code, len(r.text), r)
 
                 try_cnt = 4
             except Exception as e:
@@ -237,7 +239,7 @@ class Getter:
 
             return ret_ok
 
-    def check_if_rise(self, url, status_code, size):
+    def check_if_rise(self, url, status_code, size, response=None):
 
         if status_code == Configuration.main_code \
                 and Configuration.main_min_length <= size <= Configuration.main_max_length:
@@ -245,9 +247,15 @@ class Getter:
             server = Tools.get_host(url)
             pad = " " * (15 - len(server))
 
+            waf = self.get_waf(response)
+            if waf is not None:
+                waf = '{R}* %s{W}' % waf
+            else:
+                waf = ''
+
             Tools.clear_line()
-            Logger.pl('{W}Found: {O}%s{W} %s (CODE:%d|SIZE:%d) ' % (
-                server, pad, status_code, size))
+            Logger.pl('{W}Found: {O}%s{W} %s (CODE:%d|SIZE:%d) %s' % (
+                server, pad, status_code, size, waf))
 
             if Configuration.proxy_report_to != '':
                 try:
@@ -267,3 +275,21 @@ class Getter:
 
         Logger.pl('+ %s (CODE:%d|SIZE:%d) ' % (
             url, status, size))
+
+    @classmethod
+    def get_waf(cls, response) -> Optional[str]:
+        try:
+            if isinstance(response, Response):
+                ht = '\n'.join([str(f"{k}: {v}").lower() for k, v in response.headers.items()])
+                for ws in Configuration.waf_list_short:
+                    if ws in ht:
+                        return next(iter([
+                            k
+                            for k, v in Configuration.waf_list.items()
+                            for n in v
+                            if ws in ht
+                        ]), None)
+        except:
+            pass
+
+        return None

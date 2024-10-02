@@ -43,6 +43,8 @@ class Configuration(object):
     base_target = False
     main_min_length = 0
     main_max_length = 0
+    waf_list = {}
+    waf_list_short = []
 
     @staticmethod
     def initialize():
@@ -196,6 +198,42 @@ class Configuration(object):
                     Color.pl('{!} {R}error: could not open ./resources/user_agents.txt{W}\r\n')
                     Configuration.exit_gracefully(0)
 
+        # get list of WAF
+        try:
+
+            with open(str(Path(__file__).parent) + "/resources/waf_headers.json", 'r') as f:
+                tmp_waf_list = json.loads(f.read())
+
+                if not isinstance(tmp_waf_list, dict):
+                    raise Exception("Invalid dictionary!")
+
+                Configuration.waf_list = {
+                    k: [
+                        str(n).lower()
+                        for n in v
+                    ]
+                    for k, v in tmp_waf_list.items()
+                }
+                Configuration.waf_list_short = [
+                    str(v).lower()
+                    for k, vl in tmp_waf_list.items()
+                    for v in vl
+                ]
+
+        except IOError as x:
+            if x.errno == errno.EACCES:
+                Color.pl('{!} {R}error: could not open ./resources/waf_headers.json {O}permission denied{R}{W}\r\n')
+                Configuration.exit_gracefully(0)
+            elif x.errno == errno.EISDIR:
+                Color.pl('{!} {R}error: could not open ./resources/waf_headers.json {O}it is an directory{R}{W}\r\n')
+                Configuration.exit_gracefully(0)
+            else:
+                Color.pl('{!} {R}error: could not open ./resources/waf_headers.json{W}\r\n')
+                Configuration.exit_gracefully(0)
+        except Exception as e:
+            Color.pl('{!} {R}error: could not parse ./resources/waf_headers.json {O}%s{W}\r\n' % str(e))
+            Configuration.exit_gracefully(0)
+
         if args.header != '':
             jData = {}
             try:
@@ -204,13 +242,13 @@ class Configuration(object):
                 Logger.pl('{!} {R}error: could not convert header value {O}%s{R} from an JSON object {W}\r\n' % (args.header))
                 Configuration.exit_gracefully(0)
 
-            Configuration.user_headers={}
+            Configuration.user_headers = {}
             try:
                 for k in jData:
                     if isinstance(k, str):
                         if isinstance(jData[k], str):
                             if k.lower().find("user-agent") != -1:
-                                Configuration.user_agent  = jData[k]
+                                Configuration.user_agent = jData[k]
                             elif k.lower().find("host") != -1:
                                 pass
                             elif k.lower().find("connection") != -1:

@@ -1,0 +1,13 @@
+{
+  "CloudFront" : [
+    "X-Amz-Cf",
+    "cloudfront"
+  ],
+  "Akamai" : [
+    "X-Akamai"
+  ],
+  "BigIP" : [
+    "BigIP"
+  ]
+}
+
