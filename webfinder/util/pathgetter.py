@@ -167,14 +167,6 @@ class PathGetter:
 
                     self.save_status()
 
-                    if Getter.error_count >= 50:
-                        self.current_gettter.stop()
-                        self.running=False
-                        Tools.clear_line()
-                        Logger.pl('\r\n{!} {R}FATAL: Too many errors connecting to host, exiting...{W}')
-                        Logger.pl('     {O}you can use \'webfinder -R\' to restore/continue this session{W}\r\n')
-                        Configuration.kill(0)
-
                 except:
                     raise
                 time.sleep(10)
