@@ -186,6 +186,7 @@ class WebFinder(object):
         """ Displays ASCII art of the highest caliber.  """
         Color.pl(Configuration.get_banner())
 
+
 def run():
     requests.packages.urllib3.disable_warnings()
 
