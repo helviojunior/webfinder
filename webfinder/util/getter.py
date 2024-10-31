@@ -17,7 +17,6 @@ import hashlib
 from collections import defaultdict
 from OpenSSL import SSL
 from OpenSSL.crypto import dump_certificate, dump_publickey, FILETYPE_ASN1, FILETYPE_PEM
-from urllib.parse import urlparse
 
 from urllib.parse import urlparse
 
@@ -219,7 +218,14 @@ class Getter:
 
         if not Configuration.full_log:
             Tools.clear_line()
-            print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, url)), end='\r', flush=True)
+            txt = url
+            try:
+                tmp = urlparse(url)
+                txt = tmp.scheme.ljust(5, ' ') + ' ' + tmp.netloc
+            except:
+                pass
+
+            print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, txt)), end='\r', flush=True)
         
         try_cnt = 0
         while try_cnt < 5:
@@ -265,6 +271,7 @@ class Getter:
 
             server = Tools.get_host(url)
             pad = " " * (15 - len(server))
+            scheme = str(urlparse(url).scheme).lower()
 
             waf = self.get_waf(url, response)
             if waf is not None:
@@ -273,8 +280,8 @@ class Getter:
                 waf = ''
 
             Tools.clear_line()
-            Logger.pl('{W}Found: {O}%s{W} %s (CODE:%d|SIZE:%d) %s' % (
-                server, pad, status_code, size, waf))
+            Logger.pl('{W}Found: {O}%s{W} %s (SCHEME:%s|CODE:%d|SIZE:%d) %s' % (
+                server, pad, scheme, status_code, size, waf))
 
             if Configuration.proxy_report_to != '':
                 try:

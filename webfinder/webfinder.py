@@ -68,9 +68,9 @@ class WebFinder(object):
             timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
             Logger.pl('     {C}start time {O}%s{W}' % timestamp)
             if get.duplicated > 0:
-                Logger.pl('     {C}duplicate {O}%d{C} ip addresses, duplicates ignored {O}%d{C} ips{W}' % (get.len(), get.duplicated))
+                Logger.pl('     {C}IP count {O}%d{C}, duplicate/ignored {O}%d{C} ips{W}' % (get.len(), get.duplicated))
             else:
-                Logger.pl('     {C}duplicate {O}%d{C} ip addresse{W}' % get.len())
+                Logger.pl('     {C}IP count {O}%d{C}{W}' % get.len())
             Logger.pl(' ')
 
             Logger.pl('{+} {W}Connectivity checker{W}')
@@ -93,7 +93,7 @@ class WebFinder(object):
                 Configuration.main_max_length = float(Configuration.main_length) * 1.07
 
                 Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
-                          (Configuration.target, ip, r.status_code, Configuration.main_length))
+                          (Configuration.host, ip, r.status_code, Configuration.main_length))
 
             except Exception as e:
                 if Configuration.proxy != '':
@@ -117,14 +117,14 @@ class WebFinder(object):
                     r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
 
                     Logger.pl('{+} {W}Connection test against using report to proxy {C}%s{W} OK! (CODE:%d|SIZE:%d) ' %
-                              (Configuration.target, r.status_code, len(r.text)))
+                              (Configuration.host, r.status_code, len(r.text)))
 
                 except Exception as e:
                     Logger.pl('{!} {R}Error connecting to url {O}%s{R} using {G}report to{R} proxy {O}%s{W}' %
                               (Configuration.target, Configuration.proxy_report_to))
                     raise e
 
-            Logger.pl('{*} {W}Scanning IP address for {C}%s{W} ' % Configuration.target)
+            Logger.pl('{*} {W}Scanning alternative IP address for {C}%s{W} ' % Configuration.host)
 
             Logger.pl('     ')
 
@@ -178,7 +178,7 @@ class WebFinder(object):
         timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
         Logger.pl('{+} {C}End time {O}%s{W}' % timestamp)
 
-        Logger.pl("{+} Finished tests against {C}%s{W}, exiting" % Configuration.target)
+        Logger.pl("{+} Finished tests against {C}%s{W}, exiting" % Configuration.host)
 
         #Configuration.delete_temp()
 

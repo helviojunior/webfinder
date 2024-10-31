@@ -15,31 +15,30 @@ class Configuration(object):
     ''' Stores configuration variables and functions for Turbo Search. '''
     version = '0.0.0'
 
-    initialized = False # Flag indicating config has been initialized
+    initialized = False  # Flag indicating config has been initialized
     verbose = 0
     target = ''
     ip_list = ''
     out_file = ''
     full_log = False
-    cmd_line =''
+    cmd_line = ''
     restore = ''
-    threads_data = None
-    restored_uri=''
-    restored_paths=[]
-    threads_data={}
-    proxy=''
-    host=''
-    proxy_report_to=''
-    request_method='GET'
-    user_agent=''
-    user_headers={}
-    ipaddresses=[]
-    skip_current=False
+    restored_uri = ''
+    restored_paths = []
+    threads_data = {}
+    proxy = ''
+    host = ''
+    proxy_report_to = ''
+    request_method = 'GET'
+    user_agent = ''
+    user_headers = {}
+    ipaddresses = []
+    skip_current = False
     db = None
-    statsdb=False
-    main_code=0
-    main_length=0
-    check_both=False
+    statsdb = False
+    main_code = 0
+    main_length = 0
+    check_both = False
     base_target = False
     main_min_length = 0
     main_max_length = 0
@@ -56,14 +55,14 @@ class Configuration(object):
         # Only initialize this class once
         if Configuration.initialized:
             return
+
         Configuration.initialized = True
 
-        Configuration.verbose = 0 # Verbosity level.
+        Configuration.verbose = 0  # Verbosity level.
         Configuration.print_stack_traces = True
 
         # Overwrite config values with arguments (if defined)
         Configuration.load_from_arguments()
-
 
     @staticmethod
     def load_from_arguments():
@@ -74,12 +73,19 @@ class Configuration(object):
 
         sys.argv[0] = 'webfinder'
 
-        force_restore = any(['-R' in word for word in sys.argv])
-        help = any(['-h' in word for word in sys.argv])
+        force_restore = any(['-R' == word for word in sys.argv])
+        show_help = any(['-h' == word for word in sys.argv])
 
-        if help:
+        if show_help:
             args = Arguments().args
         else:
+
+            Configuration.cmd_line = ' '.join([
+                a if ' ' not in a else f"\"{a}\""
+                for a in sys.argv
+                if a != "-I"
+            ])
+
             if not force_restore and os.path.exists("webfinder.restore"):
                 ignore = any(['-I' in word for word in sys.argv])
                 if not ignore:
@@ -103,9 +109,6 @@ class Configuration(object):
 
             else:
                 args = Arguments().args
-                for a in sys.argv:
-                    if a != "-I":
-                        Configuration.cmd_line += "%s " % a
 
         Color.pl('{+} {W}Startup parameters')
 
@@ -400,6 +403,7 @@ class Configuration(object):
             result += Color.s("{G}%s {W} {C}%s{W}\n" % (key.ljust(max_len),val))
         return result
 
+
 if __name__ == '__main__':
-    Configuration.initialize(False)
+    Configuration.initialize()
     print(Configuration.dump())
