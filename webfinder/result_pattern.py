@@ -3,7 +3,7 @@
 
 
 class ResultPattern(object):
-    RES_LIMIT = 0.7
+    RES_LIMIT = 0.07
     _status_code = 0
     _length = -1
     _min_length = 0
