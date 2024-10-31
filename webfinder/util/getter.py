@@ -19,7 +19,6 @@ from OpenSSL import SSL
 from OpenSSL.crypto import dump_certificate, dump_publickey, FILETYPE_ASN1, FILETYPE_PEM
 from urllib.parse import urlparse
 
-from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 from ..config import Configuration
