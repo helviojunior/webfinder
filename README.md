@@ -4,11 +4,13 @@ Esta é uma ferramenta para busca de endereços IP que respondam por uma URL esp
 
 ## Instalação
 
-Você pode instalar (ou atualizar para) a última versão do `WebFinder` diretamente do repositório do GitHub
+> :information_source: Recomendamos a utilização do `pipx` ao invés do `pip` para instalação no sistema.
 
 ```
-pip3 install wafwebfinder
+python3 -m pipx install wafwebfinder
 ```
+
+> :information_source: Verifique a necessidade de executar também o comando `python3 -m pipx ensurepath`
 
 ## Conceito técnico
 Ao realizar uma requisição HTTP/S para um host a primeira fase a ser realizada pelo cliente é a resolução de nome para IP e posteriormente conexão direta para este IP. Este procedimento se refere até a camada de Transporte do modelo OSI (camada 4) onde temos apenas IP e porta. Após a conexão TCP ocorrer com sucesso o cliente monta um cabeçalho de requisição HTTP e envia ao servidor, veja o exemplo a seguir:
