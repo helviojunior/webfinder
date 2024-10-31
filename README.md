@@ -7,7 +7,7 @@ Esta é uma ferramenta para busca de endereços IP que respondam por uma URL esp
 Você pode instalar (ou atualizar para) a última versão do `WebFinder` diretamente do repositório do GitHub
 
 ```
-pip3 install --upgrade git+https://github.com/helviojunior/webfinder.git#egg=webfinder
+pip3 install wafwebfinder
 ```
 
 ## Conceito técnico
@@ -102,7 +102,7 @@ Ao executar o `WebFinder` temos o resultado abaixo, onde podemos observar que so
  [+] Finished tests against https://www.helviojunior.com.br, exiting
 ```
 
-### Utilização juntamente com outras ferramentas
+### Utilização com outras ferramentas
 
 #### Enumeração DNS
 

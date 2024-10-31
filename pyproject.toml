@@ -67,4 +67,5 @@ version = {attr = "webfinder.__meta__.__version__"}
 dependencies = {file = "requirements.txt"}
 
 [project.scripts]
-avsniper = "webfinder.webfinder:run"
+webfinder = "webfinder.webfinder:run"
+wafwebfinder = "webfinder.webfinder:run"
