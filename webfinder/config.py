@@ -10,7 +10,7 @@ from .args import Arguments
 from .util.color import Color
 from .util.logger import Logger
 from .util.database import Database
-from .__meta__ import __version__
+from .__meta__ import __version__, __description__, __url__
 
 
 class Configuration(object):
@@ -399,13 +399,18 @@ class Configuration(object):
             Configuration.version = str(__version__)
 
             return '''\
+    {W}{D}
+     _       __     __       _______           __         
+    | |     / /__  / /_     / ____(_)___  ____/ /__  _____
+    | | /| / / _ \\/ __ \\   / /_  / / __ \\/ __  / _ \\/ ___/
+    | |/ |/ /  __/ /_/ /  / __/ / / / / / /_/ /  __/ /    
+    |__/|__/\\___/_.___/  / /   /_/_/ /_/\\__,_/\\___/_/     
+                        /_/    {G}{D}v%s{W}{G} by M4v3r1ck{W}                                           
 
-       {G}Web Finder {D}v%s{W}{G} by Helvio Junior{W}
-       {W}{D}automated web server finder{W}
-       {C}{D}https://github.com/helviojunior/webfinder{W}
+    {W}{D}%s{W}
+    {C}{D}%s{W}
 
-    ''' % Configuration.version
-
+    ''' % (Configuration.version, __description__, __url__)
 
     @staticmethod
     def mandatory():
