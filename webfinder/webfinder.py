@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+from webfinder.result_pattern import ResultPattern
 
 try:
     from .config import Configuration
@@ -73,35 +74,41 @@ class WebFinder(object):
                 Logger.pl('     {C}IP count {O}%d{C}{W}' % get.len())
             Logger.pl(' ')
 
-            Logger.pl('{+} {W}Connectivity checker{W}')
-            ip = None
-            try:
+            if Configuration.static_result is None or len(Configuration.static_result) == 0:
 
-                proxy = {}
-                if Configuration.proxy != '':
-                    proxy = {
-                      'http': Configuration.proxy,
-                      'https': Configuration.proxy,
-                    }
+                Configuration.static_result = {}
 
-                ip = socket.gethostbyname(Configuration.host)
-                r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
+                Logger.pl('{+} {W}Connectivity checker{W}')
+                ip = None
+                try:
 
-                Configuration.main_code = r.status_code
-                Configuration.main_length = len(r.text)
-                Configuration.main_min_length = float(Configuration.main_length) * 0.93
-                Configuration.main_max_length = float(Configuration.main_length) * 1.07
+                    proxy = {}
+                    if Configuration.proxy != '':
+                        proxy = {
+                          'http': Configuration.proxy,
+                          'https': Configuration.proxy,
+                        }
 
-                Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
-                          (Configuration.host, ip, r.status_code, Configuration.main_length))
+                    ip = socket.gethostbyname(Configuration.host)
+                    r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
 
-            except Exception as e:
-                if Configuration.proxy != '':
-                    Logger.pl('{!} {R}Error connecting to url {O}%s{R} using proxy {O}%s{W}' % (Configuration.target, Configuration.proxy))
-                else:
-                    Logger.pl('{!} {R}Error connecting to url {O}%s{R} without proxy{W}' % (Configuration.target))
-                
-                raise e
+                    size = len(r.text)
+                    if r.status_code not in Configuration.static_result:
+                        Configuration.static_result[r.status_code] = []
+                    Configuration.static_result[r.status_code].append(
+                        ResultPattern(status_code=r.status_code, length=size))
+
+                    Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
+                              (Configuration.host, ip, r.status_code, size))
+
+                except Exception as e:
+                    if Configuration.proxy != '':
+                        Logger.pl('{!} {R}Error connecting to url {O}%s{R} using proxy {O}%s{W}' % (
+                            Configuration.target, Configuration.proxy))
+                    else:
+                        Logger.pl('{!} {R}Error connecting to url {O}%s{R} without proxy{W}' % Configuration.target)
+
+                    raise e
 
             if Configuration.proxy_report_to != '':
                 try:

@@ -40,7 +40,6 @@ class Arguments(object):
         else:
             return parser.parse_args()
 
-
     def _add_global_args(self, glob):
         glob.add_argument('-t',
             action='store',
@@ -64,14 +63,12 @@ class Arguments(object):
             type=int,
             help=Color.s('number of connects in parallel (per host, default: {G}16{W})'))
 
-
         glob.add_argument('-o',
             action='store',
             dest='out_file',
             metavar='[output file]',
             type=str,
             help=Color.s('save output to disk (default: {G}none{W})'))
-
 
     def _add_custom_args(self, custom):
         custom.add_argument('-R',
@@ -82,11 +79,17 @@ class Arguments(object):
             help=Color.s('restore a previous aborted/crashed session'))
 
         custom.add_argument('-I',
-            '--ignore',
             action='store_true',
             default=False,
             dest='ignore',
             help=Color.s('ignore an existing restore file (don\'t wait 10 seconds)'))
+
+        custom.add_argument('--static',
+            action='store',
+            dest='static',
+            metavar='[expected result]',
+            type=str,
+            help=Color.s('force result by result code or/and size (ex1: 200 or ex2: 200:47)'))
 
         custom.add_argument('--proxy',
             action='store',

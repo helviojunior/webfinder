@@ -103,7 +103,7 @@ class PathGetter:
                 self.current_gettter.run(item)
 
                 if Configuration.verbose > 3:
-                    Logger.pl('{*} {W}Finishing %s{W}' % (item))
+                    Logger.pl('\n{*} {W}Finishing %s{W}' % item)
 
                 self.ingore_until = ''
                 self.q.task_done()

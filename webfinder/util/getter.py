@@ -266,8 +266,15 @@ class Getter:
 
     def check_if_rise(self, url, status_code, size, response=None):
 
-        if status_code == Configuration.main_code \
-                and Configuration.main_min_length <= size <= Configuration.main_max_length:
+        if status_code not in Configuration.static_result:
+            return
+
+        is_valid = next(iter([
+            i.is_valid_result(status_code, size)
+            for i in Configuration.static_result[status_code]
+        ]), False)
+
+        if is_valid:
 
             server = Tools.get_host(url)
             pad = " " * (15 - len(server))

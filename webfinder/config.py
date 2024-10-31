@@ -5,6 +5,7 @@ import os, subprocess, socket, re, requests, errno, sys, time, json, signal, bas
 from pathlib import Path
 from urllib.parse import urlparse
 
+from webfinder.result_pattern import ResultPattern
 from .args import Arguments
 from .util.color import Color
 from .util.logger import Logger
@@ -36,14 +37,11 @@ class Configuration(object):
     skip_current = False
     db = None
     statsdb = False
-    main_code = 0
-    main_length = 0
     check_both = False
     base_target = False
-    main_min_length = 0
-    main_max_length = 0
     waf_list = {}
     waf_list_short = []
+    static_result = {}
 
     @staticmethod
     def initialize():
@@ -329,6 +327,48 @@ class Configuration(object):
             else:
                 Logger.pl('{!} {R}error: could not open word list file {W}\r\n')
                 Configuration.exit_gracefully(0)
+
+        if args.static is not None and args.static != '':
+            static_list = args.static.split(",")
+            for static_line in static_list:
+
+                static_line = static_line.strip()
+                if ':' in static_line:
+                    i_result, i_size = static_line.split(":")
+                    size = 0
+                    res = 0
+                    try:
+                        res = int(i_result)
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_result, static_line))
+                        Configuration.exit_gracefully(0)
+
+                    try:
+                        size = int(i_size)
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} from {O}%s{R} to an integer value {W}\r\n' % (
+                                i_size, static_line))
+                        Configuration.exit_gracefully(0)
+
+                    if res not in Configuration.static_result:
+                        Configuration.static_result[res] = []
+                    Configuration.static_result[res].append(ResultPattern(status_code=res, length=size))
+
+                else:
+                    res = 0
+                    try:
+                        res = int(static_line)
+                    except:
+                        Logger.pl(
+                            '{!} {R}error: could not convert {O}%s{R} to an integer value {W}\r\n' % static_line)
+                        Configuration.exit_gracefully(0)
+
+                    if res not in Configuration.static_result:
+                        Configuration.static_result[res] = []
+                    Configuration.static_result[res].append(ResultPattern(status_code=res))
 
         Logger.pl('     {C}target:{O} %s{W}' % Configuration.target)
         Logger.pl('     {C}host:{O} %s{W}' % Configuration.host)
