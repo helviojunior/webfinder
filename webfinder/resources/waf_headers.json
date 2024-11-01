@@ -16,6 +16,27 @@
     "visid_incap_",
     "incapsula.com"
   ],
+  "Sucuri" : [
+    "x-sucuri",
+    "sucuri.net"
+  ],
+  "Bunny" : [
+    "x-sucuri",
+    "BunnyCDN",
+    "bunnyinfra.net"
+  ],
+  "KeyCDN" : [
+    "keycdn",
+    "proinity.net"
+  ],
+  "CDN77" : [
+    "X-77-",
+    "CDN77-",
+    "cdn77.com"
+  ],
+  "Fastly" : [
+    "Artisanal bits"
+  ],
   "AWS Global Accelerator" : [
     "awsglobalaccelerator.com"
   ],
@@ -23,4 +44,3 @@
     "awselb/"
   ]
 }
-
