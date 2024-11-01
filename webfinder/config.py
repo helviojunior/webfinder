@@ -400,10 +400,10 @@ class Configuration(object):
         if Configuration.out_file != '':
             Logger.pl('     {C}output file:{O} %s{W}' % Configuration.out_file)
 
-        Logger.pl('     {C}Content-type checker:{O} %s{W}' %
+        Logger.pl('     {C}content-type checker:{O} %s{W}' %
                   ('Disabled' if Configuration.no_content_type else 'Enabled'))
 
-        Logger.pl('     {C}Entropy checker:{O} %s{W}' %
+        Logger.pl('     {C}entropy checker:{O} %s{W}' %
                   ('Disabled' if Configuration.no_entropy else 'Enabled'))
 
     @staticmethod
