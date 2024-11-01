@@ -13,6 +13,9 @@
   ],
   "AWS Global Accelerator" : [
     "awsglobalaccelerator.com"
+  ],
+  "AWS Elastic Load Balancer" : [
+    "awselb/"
   ]
 }
 
