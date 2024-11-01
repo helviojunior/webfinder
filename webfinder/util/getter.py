@@ -318,6 +318,7 @@ class Getter:
                     str(f"{k}: {v}").lower()
                     for k, v in response.headers.items()
                     if k is not None and k.strip != ''
+                    and k.lower() != 'content-security-policy'
                 ])
         except:
             return None

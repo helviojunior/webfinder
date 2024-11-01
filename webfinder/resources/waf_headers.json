@@ -11,6 +11,11 @@
   "BigIP" : [
     "BigIP"
   ],
+  "Imperva" : [
+    "Imperva",
+    "visid_incap_",
+    "incapsula.com"
+  ],
   "AWS Global Accelerator" : [
     "awsglobalaccelerator.com"
   ],
