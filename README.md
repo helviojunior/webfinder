@@ -13,11 +13,12 @@ python3 -m pipx install wafwebfinder
 > :information_source: Verifique a necessidade de executar também o comando `python3 -m pipx ensurepath`
 
 ## Conceito técnico
+
 Ao realizar uma requisição HTTP/S para um host a primeira fase a ser realizada pelo cliente é a resolução de nome para IP e posteriormente conexão direta para este IP. Este procedimento se refere até a camada de Transporte do modelo OSI (camada 4) onde temos apenas IP e porta. Após a conexão TCP ocorrer com sucesso o cliente monta um cabeçalho de requisição HTTP e envia ao servidor, veja o exemplo a seguir:
 
 Supondo que em um navegador seja digitado https://www.helviojunior.com.br (conforme o comando curl abaixo), primeiramente o cliente resolverá o nome DNS para o IP (cujo resultado será 54.244.151.52) e posteriormente enviará o cabeçalho conforme abaixo:
 
-```
+```bash
 curl -k https://www.helviojunior.com.br
 ```
 
@@ -34,21 +35,31 @@ Te: trailers
 Connection: close
 ```
 
-Como podemos observar no cabeçalho ‘Host’ temos o nome completo do servidor. Com o advento do HTTP 1.1 em diante o servidor leva em consideração este campo para rotear internamente em qual site deve responder, sendo que se o servidor estiver preparado para responder por este host (www.helviojunior.com.br) o mesmo o fará.
+Como podemos observar no cabeçalho `Host` temos o nome completo do servidor. Com o advento do HTTP 1.1 em diante o servidor leva em consideração este campo para rotear internamente em qual site deve responder, sendo que se o servidor estiver preparado para responder por este host (www.helviojunior.com.br) o mesmo o fará.
 
-Porém nós podemos realizar o mesmo processo de forma diferente, onde direcionamos o cliente em qual endereço IP o mesmo deve conectar e forçamos o host no cabeçalho do HTTP conforme o comando abaixo:
+Porém, nós podemos realizar o mesmo processo de forma diferente, onde direcionamos o cliente em qual endereço IP o mesmo deve conectar e forçamos o host no cabeçalho do HTTP conforme o comando abaixo:
 
-```
+```bash
 curl -k -H 'Host: www.helviojunior.com.br' https://54.244.151.52
 ```
 
 Deste modo obrigatoriamente a conexão TCP ocorrerá para o IP 54.244.151.52 independente da resolução DNS, porém no cabeçalho http será enviado o host www.helviojunior.com.br. Desta forma iremos obter o mesmo resultado como resposta.
 
-Porém deste modo podemos alterar o endereço IP para qualquer outro, como por exemplo 10.10.10.10 que de o servidor deste IP existir e tiver preparado para responder ao site www.helviojunior.com.br a resposta (HTTP Status code e tamanho) será a mesma.
+Deste modo podemos alterar o endereço IP para qualquer outro, como por exemplo 10.10.10.10 que de o servidor deste IP existir e tiver preparado para responder ao site www.helviojunior.com.br a resposta (HTTP Status code e tamanho) será a mesma.
 
-```
+```bash
 curl -k -H 'Host: www.helviojunior.com.br' https://10.10.10.10
 ```
+
+> :information_source: Porém, no cenário acima o `Subject Name` informado via `SNI` será o IP ao invés do `host`, sendo assim em cenários onde o TLS exige SNI o comando acima não irá funcionar, desta forma precisaremos utilizar outra estratégia.
+
+Para isso utilizaremos o parâmetro `--resolve [DOMAIN]:[PORT]:[IP]` do CURL
+
+```bash
+curl -k --resolve www.helviojunior.com.br:443:54.244.151.52 https://www.helviojunior.com.br
+```
+
+Deste modo, igualmente no cenário anterior, obrigatoriamente a conexão TCP ocorrerá para o IP 54.244.151.52 pois o parâmetro `--resolve` ignora a resolução de nome via DNS. Adicionalmente desta forma o cabeçalho `host` e o `Subject Name` do `SNI` serão definidos corretamente.
 
 Sendo assim podemos utilizar essa técnica para passar uma lista de IPs e verificar se eles estão configurados para responder por um determinado site.
 
