@@ -90,7 +90,8 @@ class WebFinder(object):
                         }
 
                     ip = socket.gethostbyname(Configuration.host)
-                    r = Getter.general_request(Configuration.base_target.replace('{ip}', ip), proxy=proxy)
+                    url = Configuration.base_target.replace('{ip}', ip)
+                    r = Getter.general_request(url, proxy=proxy)
 
                     size = len(r.text)
                     if r.status_code not in Configuration.static_result:
@@ -98,8 +99,14 @@ class WebFinder(object):
                     Configuration.static_result[r.status_code].append(
                         ResultPattern(status_code=r.status_code, length=size))
 
-                    Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) ' %
-                              (Configuration.host, ip, r.status_code, size))
+                    waf = Getter.get_waf(url, r)
+                    if waf is not None:
+                        waf = '{R}* %s{W}' % waf
+                    else:
+                        waf = ''
+
+                    Logger.pl('{+} {W}Connection test against {C}%s{W} OK! (IP:%s|CODE:%d|SIZE:%d) %s' %
+                              (Configuration.host, ip, r.status_code, size, waf))
 
                 except Exception as e:
                     if Configuration.proxy != '':
