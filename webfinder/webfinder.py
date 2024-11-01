@@ -96,8 +96,7 @@ class WebFinder(object):
                     size = len(r.text)
                     if r.status_code not in Configuration.static_result:
                         Configuration.static_result[r.status_code] = []
-                    Configuration.static_result[r.status_code].append(
-                        ResultPattern(status_code=r.status_code, length=size))
+                    Configuration.static_result[r.status_code].append(ResultPattern.from_response(r))
 
                     waf = Getter.get_waf(url, r)
                     if waf is not None:

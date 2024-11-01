@@ -43,6 +43,8 @@ class Configuration(object):
     waf_list = {}
     waf_list_short = []
     static_result = {}
+    no_content_type = False
+    no_entropy = False
 
     @staticmethod
     def initialize():
@@ -168,6 +170,12 @@ class Configuration(object):
 
         if args.report_to:
             Configuration.proxy_report_to = args.report_to
+
+        if args.no_content_type:
+            Configuration.no_content_type = args.no_content_type
+
+        if args.no_entropy:
+            Configuration.no_entropy = args.no_entropy
 
         if args.request_method.upper() == "POST":
             Configuration.request_method = "POST"
@@ -392,13 +400,19 @@ class Configuration(object):
         if Configuration.out_file != '':
             Logger.pl('     {C}output file:{O} %s{W}' % Configuration.out_file)
 
+        Logger.pl('     {C}Content-type checker:{O} %s{W}' %
+                  ('Disabled' if Configuration.no_content_type else 'Enabled'))
+
+        Logger.pl('     {C}Entropy checker:{O} %s{W}' %
+                  ('Disabled' if Configuration.no_entropy else 'Enabled'))
+
     @staticmethod
     def get_banner():
-            """ Displays ASCII art of the highest caliber.  """
+        """ Displays ASCII art of the highest caliber.  """
 
-            Configuration.version = str(__version__)
+        Configuration.version = str(__version__)
 
-            return '''\
+        return '''\
     {W}{D}
      _       __     __       _______           __         
     | |     / /__  / /_     / ____(_)___  ____/ /__  _____

@@ -144,3 +144,15 @@ class Arguments(object):
             default='',
             type=str,
             help=Color.s('JSON-formatted header key/value'))
+
+        custom.add_argument('--no-content-type',
+                            action='store_true',
+                            default=False,
+                            dest='no_content_type',
+                            help=Color.s('Disable content-type checker (default: {G}no{W})'))
+
+        custom.add_argument('--no-entropy',
+                            action='store_true',
+                            default=False,
+                            dest='no_entropy',
+                            help=Color.s('Disable entropy checker (default: {G}no{W})'))

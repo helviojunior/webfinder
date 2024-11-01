@@ -270,7 +270,7 @@ class Getter:
             return
 
         is_valid = next(iter([
-            i.is_valid_result(status_code, size)
+            i.is_valid_response(response)
             for i in Configuration.static_result[status_code]
         ]), False)
 
