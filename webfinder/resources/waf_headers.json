@@ -4,6 +4,11 @@
     "cloudfront",
     "cloudfront.net"
   ],
+  "CloudFlare" : [
+    "CF-RAY",
+    "cloudflare",
+    "cloudflare.com"
+  ],
   "Akamai" : [
     "X-Akamai",
     "akamaitechnologies.com"
