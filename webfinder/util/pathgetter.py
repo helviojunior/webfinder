@@ -64,14 +64,13 @@ class PathGetter:
                                         if p.tag == 'state' and p.attrib.get('state', '').lower() == "open":
                                             if pi not in dict_item['ports']:
                                                 dict_item['ports'].append(pi)
-
-                        elif c.tag == 'service':
-                            if c.attrib['name'] == 'https' or c.attrib['name'] == 'http':
-                                dict_item['valid'] = True
-                            else:
-                                servicefp = c.attrib.get('servicefp', '')
-                                if 'HTTP/' in servicefp or 'SSL' in servicefp:
-                                    dict_item['valid'] = True
+                                        elif p.tag == 'service':
+                                            if p.attrib['name'] == 'https' or p.attrib['name'] == 'http':
+                                                dict_item['valid'] = True
+                                            else:
+                                                servicefp = p.attrib.get('servicefp', '')
+                                                if 'HTTP/' in servicefp or 'SSL' in servicefp:
+                                                    dict_item['valid'] = True
 
                 if dict_item.get('valid', False) is False:
                     continue
