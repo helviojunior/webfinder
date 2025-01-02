@@ -55,6 +55,13 @@ class Arguments(object):
             type=str,
             help=Color.s('list of IP address to be tested'))
 
+        glob.add_argument('-nmap',
+            action='store',
+            dest='nmap_file',
+            metavar='[file path]',
+            type=str,
+            help=Color.s('nmap XML file output'))
+
         glob.add_argument('-T',
             action='store',
             dest='tasks',
@@ -156,3 +163,4 @@ class Arguments(object):
                             default=False,
                             dest='no_entropy',
                             help=Color.s('Disable entropy checker (default: {G}no{W})'))
+

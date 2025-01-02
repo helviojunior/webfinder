@@ -31,10 +31,10 @@ class Tools:
             return False
 
     @staticmethod
-    def get_host(url):
+    def get_host(url, remove_port=True):
         rUri = urlparse(url)
         host = rUri.netloc.strip(': ')
-        if ':' in host:
+        if ':' in host and remove_port:
             host = host.split(':')[0]
         return host
 

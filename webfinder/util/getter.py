@@ -34,7 +34,7 @@ class Getter:
     not_found_lenght = -1
     checked = 0
     total = 0
-    ingore_until = ''
+    ignore_until = ''
     error_count = 0
     deep_links = []
 
@@ -53,7 +53,7 @@ class Getter:
         Getter.check_himself = check_himself
         Getter.checked = 0
         Getter.total = 0
-        Getter.ingore_until = ''
+        Getter.ignore_until = ''
         Getter.running=True
 
         requests.packages.urllib3.disable_warnings()
@@ -77,16 +77,16 @@ class Getter:
             Getter.checked += 1
 
     def stop(self):
-        Getter.running=False
+        Getter.running = False
 
     def run(self, base_url):
         Getter.paused = False
-        Getter.running=True
+        Getter.running = True
         Getter.path_found = []
         Getter.base_url = base_url
 
         if Getter.base_url.endswith('/'):
-            Getter.base_url = Getter.base_url [:-1]
+            Getter.base_url = Getter.base_url[:-1]
 
         for i in range(Configuration.tasks):
             self.last[i] = ''
@@ -95,7 +95,7 @@ class Getter:
             t.start()
 
         insert = True
-        if self.ingore_until != '':
+        if self.ignore_until != '':
             insert = False
 
         with self.q.mutex:
@@ -104,7 +104,7 @@ class Getter:
         Getter.total = len(self.iplist)
         for item in self.iplist:
             if Getter.running and item.strip() != '':
-                if not insert and item == self.ingore_until:
+                if not insert and item == self.ignore_until:
                     insert = True
 
                 if insert:
@@ -189,9 +189,18 @@ class Getter:
         except KeyboardInterrupt as e:
             raise e
 
-    def do_work(self, ip):
+    def do_work(self, ip_port):
 
         self.add_checked()
+
+        ip, port, _ = f'{ip_port}:::'.split(':', maxsplit=2)
+
+        if str(port).strip() != '':
+            try:
+                pi = int(port)
+                ip = f'{ip}:{str(pi)}'
+            except:
+                pass
 
         if Configuration.verbose > 4:
             Logger.pl('{?} {G}Starting worker to: {O}%s{W}' % ip)
@@ -276,8 +285,8 @@ class Getter:
 
         if is_valid:
 
-            server = Tools.get_host(url)
-            pad = " " * (15 - len(server))
+            server = Tools.get_host(url, remove_port=False)
+            pad = " " * (19 - len(server))
             scheme = str(urlparse(url).scheme).lower()
 
             waf = self.get_waf(url, response)

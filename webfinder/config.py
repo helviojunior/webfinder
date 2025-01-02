@@ -21,6 +21,7 @@ class Configuration(object):
     verbose = 0
     target = ''
     ip_list = ''
+    nmap_file = ''
     out_file = ''
     full_log = False
     cmd_line = ''
@@ -135,6 +136,9 @@ class Configuration(object):
         if args.ip_list:
             Configuration.ip_list = args.ip_list
 
+        if args.nmap_file:
+            Configuration.nmap_file = args.nmap_file
+
         if args.verbose:
             Configuration.verbose = args.verbose
 
@@ -156,7 +160,7 @@ class Configuration(object):
         if Configuration.target == '':
             config_check = 1
 
-        if Configuration.ip_list == '':
+        if Configuration.ip_list == '' and Configuration.nmap_file == '':
             config_check = 1
 
         if config_check == 1:
@@ -299,9 +303,53 @@ class Configuration(object):
             Color.pl('{!} {R}error: invalid report to proxy {O}%s{R}{W}\r\n' % Configuration.proxy_report_to)
             Configuration.exit_gracefully(0)
 
-        if not os.path.isfile(Configuration.ip_list):
-            Color.pl('{!} {R}error: word list file not found {O}%s{R}{W}\r\n' % Configuration.ip_list)
-            Configuration.exit_gracefully(0)
+        if Configuration.nmap_file != '':
+            if not os.path.isfile(Configuration.nmap_file):
+                Color.pl('{!} {R}error: Nmap XML file not found {O}%s{R}{W}\r\n' % Configuration.nmap_file)
+                Configuration.exit_gracefully(0)
+
+            try:
+                with open(Configuration.nmap_file, 'r') as f:
+                    # file opened for writing. write to it here
+                    pass
+            except IOError as x:
+                if x.errno == errno.EACCES:
+                    Logger.pl('{!} {R}error: could not open Nmap XML file {O}permission denied{R}{W}\r\n')
+                    Configuration.exit_gracefully(0)
+                elif x.errno == errno.EISDIR:
+                    Logger.pl('{!} {R}error: could not open Nmap XML file {O}it is an directory{R}{W}\r\n')
+                    Configuration.exit_gracefully(0)
+                else:
+                    Logger.pl('{!} {R}error: could not open Nmap XML file {W}\r\n')
+                    Configuration.exit_gracefully(0)
+
+            try:
+                import xml.etree.ElementTree as xml
+                tree = xml.parse(Configuration.nmap_file)
+                tree.getroot()
+            except Exception as x:
+                Logger.pl('{!} {R}error: could not open Nmap XML file {O}%s{R}\r\n' % str(x))
+                Configuration.exit_gracefully(0)
+
+        else:
+            if not os.path.isfile(Configuration.ip_list):
+                Color.pl('{!} {R}error: word list file not found {O}%s{R}{W}\r\n' % Configuration.ip_list)
+                Configuration.exit_gracefully(0)
+
+            try:
+                with open(Configuration.ip_list, 'r') as f:
+                    # file opened for writing. write to it here
+                    pass
+            except IOError as x:
+                if x.errno == errno.EACCES:
+                    Logger.pl('{!} {R}error: could not open word list file {O}permission denied{R}{W}\r\n')
+                    Configuration.exit_gracefully(0)
+                elif x.errno == errno.EISDIR:
+                    Logger.pl('{!} {R}error: could not open word list file {O}it is an directory{R}{W}\r\n')
+                    Configuration.exit_gracefully(0)
+                else:
+                    Logger.pl('{!} {R}error: could not open word list file {W}\r\n')
+                    Configuration.exit_gracefully(0)
 
         if Configuration.out_file != '':
             try:
@@ -321,21 +369,6 @@ class Configuration(object):
                 else:
                     Color.pl('{!} {R}error: could not open output file to write{W}\r\n')
                     Configuration.exit_gracefully(0)
-
-        try:
-            with open(Configuration.ip_list, 'r') as f:
-                # file opened for writing. write to it here
-                pass
-        except IOError as x:
-            if x.errno == errno.EACCES:
-                Logger.pl('{!} {R}error: could not open word list file {O}permission denied{R}{W}\r\n')
-                Configuration.exit_gracefully(0)
-            elif x.errno == errno.EISDIR:
-                Logger.pl('{!} {R}error: could not open word list file {O}it is an directory{R}{W}\r\n')
-                Configuration.exit_gracefully(0)
-            else:
-                Logger.pl('{!} {R}error: could not open word list file {W}\r\n')
-                Configuration.exit_gracefully(0)
 
         if args.static is not None and args.static != '':
             static_list = args.static.split(",")
@@ -428,7 +461,8 @@ class Configuration(object):
 
     @staticmethod
     def mandatory():
-        Color.pl('{!} {R}error: missing a mandatory option ({O}-t and -ip{R}){G}, use -h help{W}\r\n')
+        Color.pl(
+            '{!} {R}error: missing a mandatory option {O}-t{R} and ({O}-ip{R} or {O}-nmap{R}){G}, use -h help{W}\r\n')
         Configuration.exit_gracefully(0)
 
     @staticmethod
