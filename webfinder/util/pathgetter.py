@@ -42,6 +42,7 @@ class PathGetter:
             root = tree.getroot()
             for h in root.iter('host'):
                 dict_item = {
+                    'valid': False,
                     'ports': []
                 }
                 if h.tag == 'host':
@@ -63,6 +64,18 @@ class PathGetter:
                                         if p.tag == 'state' and p.attrib.get('state', '').lower() == "open":
                                             if pi not in dict_item['ports']:
                                                 dict_item['ports'].append(pi)
+
+                        elif c.tag == 'service':
+                            if c.attrib['name'] == 'https' or c.attrib['name'] == 'http':
+                                dict_item['valid'] = True
+                            else:
+                                servicefp = c.attrib.get('servicefp', '')
+                                if 'HTTP/' in servicefp or 'SSL' in servicefp:
+                                    dict_item['valid'] = True
+
+                if dict_item.get('valid', False) is False:
+                    continue
+
                 if dict_item.get('ip', '') == '' and dict_item.get('hostname', '') != '':
                     dict_item['ip'] = dict_item['hostname']
 
