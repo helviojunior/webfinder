@@ -75,3 +75,20 @@ class Tools:
             probability * log2(probability) for probability in probabilities if probability > 0)  # final sum
 
         return round(entropy, 2)
+
+    @staticmethod
+    def get_proxy(proxy_uri):
+        if proxy_uri is None or proxy_uri.strip() == '':
+            return {}
+
+        u_proxy = urlparse(proxy_uri)
+        scheme = u_proxy.scheme
+        if scheme == "socks":
+            scheme = "socks4"
+        proxy = {
+            'http': f'{scheme}://{u_proxy.netloc}',
+            'https': f'{scheme}://{u_proxy.netloc}',
+        }
+        return proxy
+
+

@@ -83,7 +83,7 @@ class WebFinder(object):
                 ip = None
                 try:
 
-                    proxy = WebFinder.get_proxy(Configuration.proxy)
+                    proxy = Tools.get_proxy(Configuration.proxy)
 
                     ip = socket.gethostbyname(Configuration.host)
                     url = Configuration.base_target.replace('{ip}', ip)
@@ -114,7 +114,7 @@ class WebFinder(object):
 
             if Configuration.proxy_report_to != '':
                 try:
-                    proxy = WebFinder.get_proxy(Configuration.proxy_report_to)
+                    proxy = Tools.get_proxy(Configuration.proxy_report_to)
 
                     headers = Configuration.user_headers
                     if Configuration.user_agent:
@@ -191,18 +191,6 @@ class WebFinder(object):
     def print_banner(self):
         """ Displays ASCII art of the highest caliber.  """
         Color.pl(Configuration.get_banner())
-
-    @staticmethod
-    def get_proxy(proxy_uri):
-        if proxy_uri is None or proxy_uri.strip() == '':
-            return {}
-
-        u_proxy = urlparse(proxy_uri)
-        proxy = {
-            'http': f'{u_proxy.scheme}://{u_proxy.netloc}',
-            'https': f'{u_proxy.scheme}://{u_proxy.netloc}',
-        }
-        return proxy
 
 def run():
     requests.packages.urllib3.disable_warnings()
