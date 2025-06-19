@@ -1,4 +1,4 @@
-__version__ = '0.1.14'
+__version__ = '0.1.15'
 __title__ = "Waf Web Finder"
 __description__ = "Automated web server (behind WAF) finder."
 __url__ = "https://github.com/helviojunior/webfinder"

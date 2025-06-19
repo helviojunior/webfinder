@@ -46,6 +46,7 @@ class Configuration(object):
     static_result = {}
     no_content_type = False
     no_entropy = False
+    get_ip = False
 
     @staticmethod
     def initialize():
@@ -411,6 +412,9 @@ class Configuration(object):
                     if res not in Configuration.static_result:
                         Configuration.static_result[res] = []
                     Configuration.static_result[res].append(ResultPattern(status_code=res))
+
+        if args.get_ip:
+            Configuration.get_ip = True
 
         Logger.pl('     {C}target:{O} %s{W}' % Configuration.target)
         Logger.pl('     {C}host:{O} %s{W}' % Configuration.host)

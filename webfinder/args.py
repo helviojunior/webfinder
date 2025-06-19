@@ -164,3 +164,9 @@ class Arguments(object):
                             dest='no_entropy',
                             help=Color.s('Disable entropy checker (default: {G}no{W})'))
 
+
+        custom.add_argument('--ip',
+            action='store_true',
+            default=False,
+            dest='get_ip',
+            help=Color.s('Get current external IP (default: {G}no{W})'))

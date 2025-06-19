@@ -130,6 +130,18 @@ class WebFinder(object):
                               (Configuration.target, Configuration.proxy_report_to))
                     raise e
 
+
+            if Configuration.get_ip:
+                proxy=Tools.get_proxy(Configuration.proxy)
+                r = requests.get("https://ifconfig.me/ip", verify=False, timeout=10, headers=headers, proxies=proxy)
+                Logger.pl('{+} {W}Current IP {C}%s{W} OK! (CODE:%d|SIZE:%d) ' % (r.text, r.status_code, len(r.text)))
+
+                if Configuration.proxy_report_to != '':
+                    proxy=Tools.get_proxy(Configuration.proxy_report_to)
+                    r = requests.get("https://ifconfig.me/ip", verify=False, timeout=10, headers=headers, proxies=proxy)
+                    Logger.pl('{+} {W}Current IP (report to proxy) {C}%s{W} OK! (CODE:%d|SIZE:%d) ' % (r.text, r.status_code, len(r.text)))
+
+
             Logger.pl('{*} {W}Scanning alternative IP address for {C}%s{W} ' % Configuration.host)
 
             Logger.pl('     ')
