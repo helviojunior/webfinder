@@ -230,7 +230,7 @@ class Getter:
             except:
                 pass
 
-            print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, txt)), end='\r', flush=True)
+            print(("Testing [%d/%d]: %s" % (Getter.checked, Getter.total, txt)), end='\r', flush=True, file=sys.stderr)
         
         try_cnt = 0
         while try_cnt < 5:
